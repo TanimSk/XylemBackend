@@ -6,8 +6,7 @@ class Volunteer(models.Model):
     volunteer = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="volunteer"
     )
-    name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)    
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
