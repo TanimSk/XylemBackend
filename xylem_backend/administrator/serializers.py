@@ -5,21 +5,32 @@ import json
 # serializers
 from rest_framework.views import exception_handler
 
+# models
+
+
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
-    if response is not None and isinstance(response.data, dict):
-        # Extract all error messages into a plain string
-        plain_errors = []
-        for field, messages in response.data.items():
-            if isinstance(messages, list):
-                for message in messages:
-                    plain_errors.append(f"({field}) " + str(message))
-            else:
-                plain_errors.append(f"({field}) " + str(messages))
+    if response is not None:
+        if isinstance(response.data, dict):
+            # Extract error messages from dict
+            plain_errors = []
+            for field, messages in response.data.items():
+                if isinstance(messages, list):
+                    for message in messages:
+                        plain_errors.append(f"({field}) {message}")
+                else:
+                    plain_errors.append(f"({field}) {messages}")
+            message = "\n".join(plain_errors)
+        elif isinstance(response.data, list):
+            # If it's a list, join messages
+            message = "\n".join(str(msg) for msg in response.data)
+        else:
+            # Fallback for any other format (e.g., string)
+            message = str(response.data)
 
-        response.data = {"error": "\n".join(plain_errors)}
+        response.data = {"success": False, "message": message}
 
     return response
 

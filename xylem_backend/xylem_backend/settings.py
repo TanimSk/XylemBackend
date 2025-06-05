@@ -36,7 +36,6 @@ X_FRAME_OPTIONS = "ALLOWALL"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -61,7 +60,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Apps
     "administrator.apps.AdministratorConfig",
-    "rescuer.apps.RescuerConfig",
+    "volunteer.apps.VolunteerConfig",    
 ]
 
 MIDDLEWARE = [

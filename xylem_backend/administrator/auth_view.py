@@ -23,14 +23,12 @@ class LoginWthPermission(APIView):
         user = authenticate(request, email=email, password=password)
         if not user:
             return Response(
-                {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+                {
+                    "success": False,
+                    "message": "Invalid email or password",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
             )
-
-        if user.is_agent and not user.agent.approved:
-            return Response({"error": "Your account has not been approved"})
-
-        if user.is_admin and not user.administrator.active:
-            return Response({"error": "Your account has been deactivated"})
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
@@ -47,11 +45,7 @@ class LoginWthPermission(APIView):
                 "first_name": user.first_name,
                 "last_name": user.last_name,
             },
-            "role": (
-                "AGENT"
-                if user.is_agent
-                else "CUSTOMER" if user.is_customer else "ADMIN"
-            ),
+            "role": "VOLUNTEER" if user.is_volunteer else "ADMIN",
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
