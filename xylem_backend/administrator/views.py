@@ -104,7 +104,11 @@ class ManageMissingReportsView(APIView):
             report = MissingReport.objects.get(id=report_id)
         except MissingReport.DoesNotExist:
             return Response(
-                {"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND
+                {
+                    "success": False,
+                    "message": "Report not found.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         serializer = MissingReportSerializer(report, data=request.data, partial=True)
@@ -126,7 +130,11 @@ class ManageMissingReportsView(APIView):
             report = MissingReport.objects.get(id=report_id)
         except MissingReport.DoesNotExist:
             return Response(
-                {"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND
+                {
+                    "success": False,
+                    "message": "Report not found.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         report.delete()
