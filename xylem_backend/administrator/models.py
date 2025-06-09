@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import uuid
 
 
 class User(AbstractUser):
@@ -12,7 +13,7 @@ class User(AbstractUser):
 
 
 class MissingReport(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     age = models.IntegerField(null=True, blank=True)
     GENDER_CHOICES = (
