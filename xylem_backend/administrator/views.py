@@ -31,9 +31,10 @@ def logged_in_only_admin(func):
     def wrapper(self, request, *args, **kwargs):
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
-            if getattr(user, "is_admin", False):
+            if user.is_admin:
                 return func(self, request, *args, **kwargs)
             else:
+                print(user.username)
                 return Response(
                     {
                         "success": False,
