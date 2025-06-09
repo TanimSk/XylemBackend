@@ -1,12 +1,12 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from administrator.models import MissingReport
 import json
 
 # serializers
 from rest_framework.views import exception_handler
 
 # models
-
 
 
 def custom_exception_handler(exc, context):
@@ -52,3 +52,9 @@ class CustomPasswordChangeSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError("Old password is incorrect.")
         return value
+
+
+class MissingReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MissingReport
+        fields = "__all__"
