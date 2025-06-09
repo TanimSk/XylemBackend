@@ -27,7 +27,7 @@ class AuthenticateOnlyAdmin(BasePermission):
 # permission decorator
 def logged_in_only_admin(func):
     def wrapper(request, *args, **kwargs):
-        if request.user and request.user.is_authenticated:
+        if hasattr(request, "user") and request.user.is_authenticated:
             if request.user.is_admin:
                 return func(request, *args, **kwargs)
             else:
