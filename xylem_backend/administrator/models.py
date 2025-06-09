@@ -30,3 +30,9 @@ class MissingReport(models.Model):
     photo_url2 = models.URLField(null=True, blank=True)
     photo_url3 = models.URLField(null=True, blank=True)
     approved = models.BooleanField(default=False)
+
+    # basic info of the person who reported
+    reporter_name = models.CharField(max_length=100, null=True, blank=True)
+    reporter_contact = models.CharField(max_length=100, null=True, blank=True)
+    reporter_location = models.CharField(max_length=255, null=True, blank=True)
+    note = models.CharField(max_length=500, null=True, blank=True)

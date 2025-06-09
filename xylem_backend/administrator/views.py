@@ -13,7 +13,7 @@ from administrator.serializers import MissingReportSerializer
 
 
 # Authenticate User Only Class
-class AuthenticateOnlyAgent(BasePermission):
+class AuthenticateOnlyAdmin(BasePermission):
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated:
             if request.user.is_admin:
@@ -22,6 +22,32 @@ class AuthenticateOnlyAgent(BasePermission):
                 return False
 
         return False
+
+
+# permission decorator
+def logged_in_only_admin(func):
+    def wrapper(request, *args, **kwargs):
+        if request.user and request.user.is_authenticated:
+            if request.user.is_admin:
+                return func(request, *args, **kwargs)
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "You do not have permission to access this resource.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "You must be logged in to access this resource.",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+    return wrapper
 
 
 # Pagination Config
@@ -33,9 +59,9 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class ManageMissingReportsView(APIView):
-    permission_classes = [AuthenticateOnlyAgent]
     pagination_class = StandardResultsSetPagination
 
+    @logged_in_only_admin
     def get(self, request):
         reports = MissingReport.objects.all().order_by("-last_seen_datetime")
         paginator = self.pagination_class()
@@ -50,6 +76,7 @@ class ManageMissingReportsView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @logged_in_only_admin
     def put(self, request, *args, **kwargs):
         report_id = kwargs.get("id")
         try:
@@ -65,6 +92,7 @@ class ManageMissingReportsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @logged_in_only_admin
     def delete(self, request, *args, **kwargs):
         report_id = kwargs.get("id")
         try:
