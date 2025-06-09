@@ -60,8 +60,5 @@ class MissingReportSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = (
             "id",
-            "approved",
-            "reporter_name",
-            "reporter_contact",
-            "reporter_location",
+            "approved",            
         )
