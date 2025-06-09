@@ -34,7 +34,7 @@ def logged_in_only_admin(func):
             if user.is_admin:
                 return func(self, request, *args, **kwargs)
             else:
-                print(user.username)
+                print(user)
                 return Response(
                     {
                         "success": False,
