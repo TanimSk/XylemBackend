@@ -88,7 +88,14 @@ class ManageMissingReportsView(APIView):
         serializer = MissingReportSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "success": True,
+                    "message": "Missing report created successfully.",
+                    **serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
 
     @logged_in_only_admin
     def put(self, request, *args, **kwargs):
@@ -101,10 +108,16 @@ class ManageMissingReportsView(APIView):
             )
 
         serializer = MissingReportSerializer(report, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": True,
+                    "message": "Missing report updated successfully.",
+                    **serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
     @logged_in_only_admin
     def delete(self, request, *args, **kwargs):
@@ -117,4 +130,10 @@ class ManageMissingReportsView(APIView):
             )
 
         report.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {
+                "success": True,
+                "message": "Missing report deleted successfully.",
+            },
+            status=status.HTTP_204_NO_CONTENT,
+        )
