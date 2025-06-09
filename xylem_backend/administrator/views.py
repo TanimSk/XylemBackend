@@ -4,6 +4,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from functools import wraps
+
 
 # models
 from administrator.models import MissingReport
@@ -24,12 +26,13 @@ class AuthenticateOnlyAdmin(BasePermission):
         return False
 
 
-# permission decorator
 def logged_in_only_admin(func):
-    def wrapper(request, *args, **kwargs):
-        if hasattr(request, "user") and request.user.is_authenticated:
-            if request.user.is_admin:
-                return func(request, *args, **kwargs)
+    @wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated:
+            if getattr(user, "is_admin", False):
+                return func(self, request, *args, **kwargs)
             else:
                 return Response(
                     {
@@ -46,7 +49,6 @@ def logged_in_only_admin(func):
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
     return wrapper
 
 
