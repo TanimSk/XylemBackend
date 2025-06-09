@@ -99,7 +99,7 @@ class ManageMissingReportsView(APIView):
 
     @logged_in_only_admin
     def put(self, request, *args, **kwargs):
-        report_id = request.data.get("id")
+        report_id = request.GET.get("id")
         try:
             report = MissingReport.objects.get(id=report_id)
         except MissingReport.DoesNotExist:
@@ -125,7 +125,7 @@ class ManageMissingReportsView(APIView):
 
     @logged_in_only_admin
     def delete(self, request, *args, **kwargs):
-        report_id = request.data.get("id")
+        report_id = request.GET.get("id")
         try:
             report = MissingReport.objects.get(id=report_id)
         except MissingReport.DoesNotExist:
