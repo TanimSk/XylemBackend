@@ -62,7 +62,17 @@ class ManageMissingReportsView(APIView):
     pagination_class = StandardResultsSetPagination
 
     @logged_in_only_admin
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
+        if request.GET.get("id"):
+            report_id = request.GET.get("id")
+            try:
+                report = MissingReport.objects.get(id=report_id)
+            except MissingReport.DoesNotExist:
+                return Response(
+                    {"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+            serializer = MissingReportSerializer(report)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         reports = MissingReport.objects.all().order_by("-last_seen_datetime")
         paginator = self.pagination_class()
         paginated_reports = paginator.paginate_queryset(reports, request)
