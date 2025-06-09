@@ -34,7 +34,8 @@ def logged_in_only_admin(func):
             if user.is_admin:
                 return func(self, request, *args, **kwargs)
             else:
-                print(user)
+                for field in user._meta.fields:
+                    print(f"{field.name} = {getattr(user, field.name)}")
                 return Response(
                     {
                         "success": False,
@@ -50,6 +51,7 @@ def logged_in_only_admin(func):
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
     return wrapper
 
 
