@@ -82,7 +82,7 @@ class ManageMissingReportsView(APIView):
                 )
             serializer = MissingReportSerializer(report)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        reports = MissingReport.objects.all().order_by("-last_seen_datetime")
+        reports = MissingReport.objects.all().order_by("-created_at")
         paginator = self.pagination_class()
         paginated_reports = paginator.paginate_queryset(reports, request)
         serializer = MissingReportSerializer(paginated_reports, many=True)
