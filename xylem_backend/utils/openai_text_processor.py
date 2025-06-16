@@ -1,9 +1,8 @@
+from openai import OpenAI
 from django.conf import settings
-import openai
-
 
 def process_text_with_openai(text):
-    openai.api_key = settings.OPENAI_API_KEY
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
     prompt = f"""
     You are an expert information extractor. Given a natural, unstructured text describing a missing person report, extract the information and format it into this JSON structure:
@@ -15,7 +14,7 @@ def process_text_with_openai(text):
     "clothing_description": "",
     "last_seen_location": "",
     "last_seen_datetime": "",    
-    "note": <any additional notes>,
+    "note": <any additional notes>
 }}
 
 - Always output valid JSON.
@@ -30,16 +29,13 @@ Now, here is the text:
 {text}
     """
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",  # or "gpt-3.5-turbo"
         messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful assistant that writes missing person notices.",
-            },
+            {"role": "system", "content": "You are a helpful assistant that writes missing person notices."},
             {"role": "user", "content": prompt},
         ],
         temperature=0.7,
     )
 
-    print(response.choices[0].message["content"])
+    print(response.choices[0].message.content)
