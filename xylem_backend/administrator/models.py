@@ -37,3 +37,9 @@ class MissingReport(models.Model):
     reporter_contact = models.CharField(max_length=100, null=True, blank=True)
     reporter_location = models.CharField(max_length=255, null=True, blank=True)
     note = models.CharField(max_length=500, null=True, blank=True)
+
+    # only for scrappers
+    confidence_level = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True
+    )
+    source = models.CharField(max_length=100, null=True, blank=True)

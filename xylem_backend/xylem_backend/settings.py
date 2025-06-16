@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Apps
     "administrator.apps.AdministratorConfig",
-    "volunteer.apps.VolunteerConfig",    
+    "volunteer.apps.VolunteerConfig",
 ]
 
 MIDDLEWARE = [
@@ -69,7 +69,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -241,3 +241,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Directory to collect stat
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# env secret key
+BOT_API_KEY = os.getenv("BOT_API_KEY")
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")

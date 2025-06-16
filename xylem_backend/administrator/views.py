@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework.permissions import BasePermission
 from rest_framework.pagination import PageNumberPagination
@@ -5,7 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from functools import wraps
-
+from django.views.decorators.csrf import csrf_exempt
+import json
+import requests
 
 # models
 from administrator.models import MissingReport
@@ -85,9 +88,55 @@ class ManageMissingReportsView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+        if (
+            request.query_params.get("key") == settings.BOT_API_KEY
+            and request.query_params.get("source") == "tg"
+        ):
+            print("Received request from Telegram bot")
+            data = json.loads(request.body.decode("utf-8"))
+            chat_id = data.get("message", {}).get("chat", {}).get("id")
+            user_text = data.get("message", {}).get("text", "")
+            from_user = data.get("message", {}).get("from", {})
+            chat = data.get("message", {}).get("chat", {})
+            chat_id = chat["id"]
+
+            # Prevent loop: don't reply to messages sent by the bot itself
+            if from_user.get("id") == settings.TG_BOT_TOKEN:
+                return Response({"ok": True, "skipped": "Message from self"})
+
+            # Optionally: only handle group messages
+            if chat.get("type") != "group" and chat.get("type") != "supergroup":
+                return Response({"ok": True, "skipped": "Not a group message"})
+
+            # Your logic here
+            reply_text = f"You said: {user_text}"
+
+            # Send reply
+            requests.post(
+                f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": chat_id,
+                    "text": reply_text,
+                },
+            )
+
+            return Response(
+                {
+                    "ok": True,
+                    "message": "Message received and processed successfully.",
+                },
+                status=status.HTTP_200_OK,
+            )
+
         serializer = MissingReportSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            if (
+                request.query_params.get("key") == settings.BOT_API_KEY
+                and request.query_params.get("source") == "scrapper"
+            ):
+                serializer.save(source="scrapper")
+            else:
+                serializer.save(source="web")
             return Response(
                 {
                     "success": True,
