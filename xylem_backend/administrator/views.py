@@ -89,10 +89,9 @@ class ManageMissingReportsView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
-        if (
-            request.query_params.get("key") == settings.BOT_API_KEY
-            and not request.query_params.get("source")
-        ):
+        if request.query_params.get(
+            "key"
+        ) == settings.BOT_API_KEY and not request.query_params.get("source"):
             print("Received request from Telegram bot")
             data = json.loads(request.body.decode("utf-8"))
             chat_id = data.get("message", {}).get("chat", {}).get("id")
@@ -109,12 +108,21 @@ class ManageMissingReportsView(APIView):
             if chat.get("type") != "group" and chat.get("type") != "supergroup":
                 return Response({"ok": True, "skipped": "Not a group message"})
 
-            # Your logic here
-            reply_text = f"You said: {user_text}"
-            print(f"Received message from {from_user.get('first_name', 'Unknown')}: {user_text}")
+            json_data = process_text_with_openai(user_text)
+            print("Extracted JSON data:", json_data)
+            if not json_data:
+                reply_text = (
+                    "Sorry, I couldn't extract any information from your message."
+                )
+            else:
+                # Save the missing report
+                serializer = MissingReportSerializer(data=json_data)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save(source="telegram")
+                    reply_text = "Missing report created successfully."
+                else:
+                    reply_text = "Failed to create missing report. Please check the format of your message."
 
-            process_text_with_openai(user_text)
-            
             # Send reply
             requests.post(
                 f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",

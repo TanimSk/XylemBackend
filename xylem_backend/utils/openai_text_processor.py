@@ -1,5 +1,6 @@
 from openai import OpenAI
 from django.conf import settings
+import json
 
 def process_text_with_openai(text):
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -27,6 +28,8 @@ Now, here is the text:
 
 
 {text}
+
+if the text does not contain any information about a missing person, return an empty JSON object: {{}}
     """
 
     response = client.chat.completions.create(
@@ -38,4 +41,4 @@ Now, here is the text:
         temperature=0.7,
     )
 
-    print(response.choices[0].message.content)
+    return json.loads(response.choices[0].message.content.strip())
