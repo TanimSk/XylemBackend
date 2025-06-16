@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
 from utils.openai_text_processor import process_text_with_openai
+from datetime import datetime
 
 # models
 from administrator.models import MissingReport
@@ -72,6 +73,48 @@ class ManageMissingReportsView(APIView):
 
     @logged_in_only_admin
     def get(self, request, *args, **kwargs):
+        if request.query_params.get("action") == "search":
+            if request.query_params.get("key") == settings.BOT_API_KEY:
+                name = request.query_params.get("name")
+                age = request.query_params.get("age")
+                age = int(age) if age else None
+                gender = request.query_params("gender")
+                last_seen_location = request.query_params.get("last_seen_location")
+                clothing_description = request.query_params.get("clothing_description")
+                last_seen_date = request.query_params.get("last_seen_date")
+                last_seen_date = (
+                    datetime.strptime(last_seen_date, "%Y-%m-%d")
+                    if last_seen_date
+                    else None
+                )
+
+                reports = MissingReport.objects.filter(
+                    # name
+                    **({"name__icontains": name} if name else {}),
+                    # age
+                    **({"age": age} if age is not None else {}),
+                    # gender
+                    **({"gender": gender} if gender is not None else {}),
+                    # last_seen_location
+                    **(
+                        {"last_seen_location__icontains": last_seen_location}
+                        if last_seen_location
+                        else {}
+                    ),
+                    # clothing_description
+                    **(
+                        {"clothing_description__icontains": clothing_description}
+                        if clothing_description
+                        else {}
+                    ),
+                    # last_seen_datetime
+                    **(
+                        {"last_seen_datetime__date": last_seen_date}
+                        if last_seen_date
+                        else {}
+                    ),
+                )
+
         if request.GET.get("id"):
             report_id = request.GET.get("id")
             try:
