@@ -245,3 +245,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # env secret key
 BOT_API_KEY = os.getenv("BOT_API_KEY")
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")

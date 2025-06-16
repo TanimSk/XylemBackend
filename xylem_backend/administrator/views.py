@@ -9,6 +9,7 @@ from functools import wraps
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
+from utils.openai_text_processor import process_text_with_openai
 
 # models
 from administrator.models import MissingReport
@@ -112,6 +113,8 @@ class ManageMissingReportsView(APIView):
             reply_text = f"You said: {user_text}"
             print(f"Received message from {from_user.get('first_name', 'Unknown')}: {user_text}")
 
+            process_text_with_openai(user_text)
+            
             # Send reply
             requests.post(
                 f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",

@@ -16,3 +16,4 @@ weasyprint==65.1
 cloudinary==1.44.0
 python-dotenv==1.0.1
 setuptools==70.0.0
+openai==1.86.0
