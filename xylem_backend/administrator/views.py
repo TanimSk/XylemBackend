@@ -90,7 +90,7 @@ class ManageMissingReportsView(APIView):
     def post(self, request):
         if (
             request.query_params.get("key") == settings.BOT_API_KEY
-            and request.query_params.get("source") == "tg"
+            and not request.query_params.get("source")
         ):
             print("Received request from Telegram bot")
             data = json.loads(request.body.decode("utf-8"))
