@@ -110,6 +110,7 @@ class ManageMissingReportsView(APIView):
 
             # Your logic here
             reply_text = f"You said: {user_text}"
+            print(f"Received message from {from_user.get('first_name', 'Unknown')}: {user_text}")
 
             # Send reply
             requests.post(
