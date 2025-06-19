@@ -42,3 +42,23 @@ if the text does not contain any information about a missing person, return an e
     )
 
     return json.loads(response.choices[0].message.content.strip())
+
+def summarize_text(text):
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+    prompt = f"""
+    You are a summarization expert. Given a JSON data containing information about a missing person, summarize the key details in a table format.
+    Here is the JSON data:
+    {text}
+    Please provide a concise summary in a table format.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that summarizes missing person reports."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7,
+    )
+    return response.choices[0].message.content.strip()

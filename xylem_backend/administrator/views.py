@@ -9,7 +9,7 @@ from functools import wraps
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
-from utils.openai_text_processor import process_text_with_openai
+from utils.openai_text_processor import process_text_with_openai, summarize_text
 from datetime import datetime
 
 # models
@@ -151,6 +151,15 @@ class ManageMissingReportsView(APIView):
             if chat.get("type") != "group" and chat.get("type") != "supergroup":
                 return Response({"ok": True, "skipped": "Not a group message"})
 
+            # Send reply
+            requests.post(
+                f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": chat_id,
+                    "text": "Processing your message, please wait...",
+                },
+            )
+
             json_data = process_text_with_openai(user_text)
             print("Extracted JSON data:", json_data)
             if not json_data:
@@ -172,6 +181,14 @@ class ManageMissingReportsView(APIView):
                 json={
                     "chat_id": chat_id,
                     "text": reply_text,
+                },
+            )
+
+            requests.post(
+                f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": chat_id,
+                    "text": f"Summary of the report:\n{summarize_text(json_data)}",
                 },
             )
 
