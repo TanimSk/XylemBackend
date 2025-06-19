@@ -188,7 +188,7 @@ class ManageMissingReportsView(APIView):
                 f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage",
                 json={
                     "chat_id": chat_id,
-                    "text": f"Summary of the report:\n{summarize_text(json_data)}",
+                    "text": f"Summary of the report:\n```{summarize_text(json_data)}```",
                 },
             )
 
