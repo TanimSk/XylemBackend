@@ -189,6 +189,7 @@ class ManageMissingReportsView(APIView):
                 json={
                     "chat_id": chat_id,
                     "text": f"Summary of the report:\n```{summarize_text(json_data)}```",
+                    "parse_mode": "MarkdownV2",
                 },
             )
 
