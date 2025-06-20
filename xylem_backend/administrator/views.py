@@ -309,5 +309,5 @@ class ManageMissingReportsView(APIView):
                 "success": True,
                 "message": "Missing report deleted successfully.",
             },
-            status=status.HTTP_200_NO_CONTENT,
+            status=status.HTTP_200_OK
         )
