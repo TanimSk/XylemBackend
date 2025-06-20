@@ -41,3 +41,19 @@ class VolunteerRegistrationSerializer(RegisterSerializer):
         )
         user_instance.save()
         return user
+
+
+class VolunteerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Volunteer
+        fields = [
+            "id",
+            "volunteer",
+            "name",
+            "phone",
+            "address",
+            "latitude",
+            "longitude",
+            "created_at",
+        ]
+        read_only_fields = ["id", "volunteer", "created_at"]
