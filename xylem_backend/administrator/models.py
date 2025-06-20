@@ -62,9 +62,18 @@ class MissingReport(models.Model):
             # Find the nearest volunteer based on reporter's location
             volunteers = Volunteer.objects.all()
             if volunteers:
-                nearest_volunteer = min(
-                    volunteers,
-                    key=lambda v: matching_score(v.address, self.last_seen_location),
-                )
+                nearest_volunteer = None
+                lowwest_score = float("inf")
+
+                for volunteer in volunteers:
+                    if volunteer.address and self.last_seen_location:
+                        score = matching_score(
+                            volunteer.address, self.last_seen_location
+                        )
+                        print(f"{score} for volunteer {volunteer.name}")
+                        if score < lowwest_score:
+                            lowwest_score = score
+                            nearest_volunteer = volunteer
+
                 self.volunteer = nearest_volunteer
         super().save(*args, **kwargs)
