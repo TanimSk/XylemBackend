@@ -16,7 +16,7 @@ class ChatBot:
             "type": "function",
             "function": {
                 "name": "search_person",
-                "description": "Search for a person by name, age, gender (male or female) and return the reports of one or many person being missing or not. Display the provided data (point by point, formatting will be in html) in from this function call",
+                "description": "Search for a person by name, age, gender (male or female) and return the reports of one or many person being missing or not. Display the provided data (point by point, formatting will be in html, dont use markdown) in from this function call",
                 "parameters": {
                     "type": "object",
                     "properties": {
