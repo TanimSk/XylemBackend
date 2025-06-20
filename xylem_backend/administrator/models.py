@@ -63,7 +63,7 @@ class MissingReport(models.Model):
             volunteers = Volunteer.objects.all()
             if volunteers:
                 nearest_volunteer = None
-                lowwest_score = float("inf")
+                highest_score = 0
 
                 for volunteer in volunteers:
                     if volunteer.address and self.last_seen_location:
@@ -71,8 +71,8 @@ class MissingReport(models.Model):
                             volunteer.address, self.last_seen_location
                         )
                         print(f"{score} for volunteer {volunteer.name}")
-                        if score < lowwest_score:
-                            lowwest_score = score
+                        if score > highest_score:
+                            highest_score = score
                             nearest_volunteer = volunteer
 
                 self.volunteer = nearest_volunteer
