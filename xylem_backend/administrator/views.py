@@ -115,6 +115,12 @@ class ManageMissingReportsView(APIView):
                     ),
                 )
 
+                # return
+                paginator = self.pagination_class()
+                paginated_reports = paginator.paginate_queryset(reports, request)
+                serializer = MissingReportSerializer(paginated_reports, many=True)
+                return paginator.get_paginated_response(serializer.data)
+
         # check if authenticated user is admin
         if not (request.user and request.user.is_authenticated):
             return Response(
