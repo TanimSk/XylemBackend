@@ -123,13 +123,14 @@ class ManageMissingReportsView(APIView):
 
         # check if authenticated user is admin
         if not (request.user and request.user.is_authenticated):
-            return Response(
-                {
-                    "success": False,
-                    "message": "You must be logged in to access this resource.",
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
+            reports = MissingReport.objects.filter(approved=True, confidence_level__gte=0.5).order_by(
+                "-created_at"
             )
+            # return
+            paginator = self.pagination_class()
+            paginated_reports = paginator.paginate_queryset(reports, request)
+            serializer = MissingReportSerializer(paginated_reports, many=True)
+            return paginator.get_paginated_response(serializer.data)
 
         if request.GET.get("id"):
             report_id = request.GET.get("id")
