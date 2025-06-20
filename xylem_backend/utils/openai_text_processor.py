@@ -2,6 +2,7 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from django.conf import settings
 import json
+import re
 
 
 def process_text_with_openai(text):
@@ -73,27 +74,24 @@ def summarize_text(text):
     return response.choices[0].message.content.strip()
 
 
-
-
 def similarity(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio() * 100
 
+
 def matching_score(str1, str2):
-    parts1 = [p.strip() for p in str1.split(',')]
-    parts2 = [p.strip() for p in str2.split(',')]
-    
+    # Split on commas and spaces
+    tokens1 = re.split(r"[,\s]+", str1.lower())
+    tokens2 = re.split(r"[,\s]+", str2.lower())
+
     total_score = 0
     matches = 0
 
-    for part1 in parts1:
-        for part2 in parts2:
-            score = similarity(part1, part2)
-            if score > 80:  # Consider it a match if similarity is over 80%
+    for token1 in tokens1:
+        for token2 in tokens2:
+            score = similarity(token1, token2)
+            if score > 80:  # Consider high-similarity tokens as match
                 total_score += score
                 matches += 1
-                break  # Avoid counting the same part twice
+                break  # Only count first good match for each token1
 
-    if matches == 0:
-        return 0
-    return total_score / matches  # Average of matched scores
-   
+    return total_score / matches if matches > 0 else 0
