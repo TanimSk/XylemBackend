@@ -1,5 +1,5 @@
 from django.urls import path
-from administrator.views import ManageMissingReportsView
+from administrator.views import ManageMissingReportsView, ChatBot
 
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
         ManageMissingReportsView.as_view(),
         name="manage_missing_reports",
     ),
+    path("chatbot/", ChatBot.as_view(), name="chatbot"),
 ]

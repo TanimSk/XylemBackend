@@ -12,12 +12,16 @@ import requests
 from utils.openai_text_processor import process_text_with_openai, summarize_text
 from datetime import datetime
 from django.db.models import Q
+from .chatbot import ChatBot
+
 
 # models
 from administrator.models import MissingReport
 
 # serializers
 from administrator.serializers import MissingReportSerializer
+
+bot = ChatBot()
 
 
 # Authenticate User Only Class
@@ -30,6 +34,21 @@ class AuthenticateOnlyAdmin(BasePermission):
                 return False
 
         return False
+
+
+class ChatBot(APIView):
+    def get(self, request, *args, **kwargs):
+        prompt = request.data.get("prompt")
+        if prompt is None:
+            return Response({"error": "No prompt provided"}, 400)
+        response = bot.prompt(prompt)
+        return Response(
+            {
+                "prompt": prompt,
+                "response": response,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 def logged_in_only_admin(func):
@@ -149,7 +168,7 @@ class ManageMissingReportsView(APIView):
         if request.query_params.get("view") == "approved":
             reports = reports.filter(approved=True)
         elif request.query_params.get("view") == "unapproved":
-            reports = reports.filter(approved=False)        
+            reports = reports.filter(approved=False)
 
         paginator = self.pagination_class()
         paginated_reports = paginator.paginate_queryset(reports, request)
