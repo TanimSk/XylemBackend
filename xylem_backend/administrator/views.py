@@ -37,7 +37,7 @@ class AuthenticateOnlyAdmin(BasePermission):
 
 
 class ChatBot(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         prompt = request.data.get("prompt")
         if prompt is None:
             return Response({"error": "No prompt provided"}, 400)
