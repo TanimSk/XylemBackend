@@ -78,7 +78,7 @@ class ManageMissingReportsView(APIView):
                 name = request.query_params.get("name")
                 age = request.query_params.get("age")
                 age = int(age) if age else None
-                gender = request.query_params("gender")
+                gender = request.query_params.get("gender")
                 last_seen_location = request.query_params.get("last_seen_location")
                 clothing_description = request.query_params.get("clothing_description")
                 last_seen_date = request.query_params.get("last_seen_date")
