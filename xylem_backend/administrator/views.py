@@ -252,7 +252,7 @@ class ManageMissingReportsView(APIView):
 
         serializer = MissingReportSerializer(report, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(approved=request.data.get("approved", report.approved))
             return Response(
                 {
                     "success": True,
