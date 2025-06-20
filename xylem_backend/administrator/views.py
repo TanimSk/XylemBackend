@@ -11,6 +11,7 @@ import json
 import requests
 from utils.openai_text_processor import process_text_with_openai, summarize_text
 from datetime import datetime
+from django.db.models import Q
 
 # models
 from administrator.models import MissingReport
@@ -121,11 +122,11 @@ class ManageMissingReportsView(APIView):
                 serializer = MissingReportSerializer(paginated_reports, many=True)
                 return paginator.get_paginated_response(serializer.data)
 
-        # check if authenticated user is admin
+        # check if authenticated user is admin (public)
         if not (request.user and request.user.is_authenticated):
-            reports = MissingReport.objects.filter(approved=True, confidence_level__gte=0.5).order_by(
-                "-created_at"
-            )
+            reports = MissingReport.objects.filter(
+                Q(approved=True) | Q(confidence_level__gte=0.5)
+            ).order_by("-created_at")
             # return
             paginator = self.pagination_class()
             paginated_reports = paginator.paginate_queryset(reports, request)
@@ -142,7 +143,14 @@ class ManageMissingReportsView(APIView):
                 )
             serializer = MissingReportSerializer(report)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         reports = MissingReport.objects.all().order_by("-created_at")
+
+        if request.query_params.get("view") == "approved":
+            reports = reports.filter(approved=True)
+        elif request.query_params.get("view") == "unapproved":
+            reports = reports.filter(approved=False)        
+
         paginator = self.pagination_class()
         paginated_reports = paginator.paginate_queryset(reports, request)
         serializer = MissingReportSerializer(paginated_reports, many=True)
