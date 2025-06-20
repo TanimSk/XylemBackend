@@ -71,7 +71,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 class ManageMissingReportsView(APIView):
     pagination_class = StandardResultsSetPagination
 
-    @logged_in_only_admin
+    # @logged_in_only_admin
     def get(self, request, *args, **kwargs):
         if request.query_params.get("action") == "search":
             if request.query_params.get("key") == settings.BOT_API_KEY:
@@ -114,6 +114,16 @@ class ManageMissingReportsView(APIView):
                         else {}
                     ),
                 )
+
+        # check if authenticated user is admin
+        if not (request.user and request.user.is_authenticated):
+            return Response(
+                {
+                    "success": False,
+                    "message": "You must be logged in to access this resource.",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         if request.GET.get("id"):
             report_id = request.GET.get("id")
