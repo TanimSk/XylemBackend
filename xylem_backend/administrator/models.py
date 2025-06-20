@@ -64,7 +64,7 @@ class MissingReport(models.Model):
             if volunteers:
                 nearest_volunteer = min(
                     volunteers,
-                    key=lambda v: matching_score(v.location, self.reporter_location),
+                    key=lambda v: matching_score(v.address, self.last_seen_location),
                 )
                 self.volunteer = nearest_volunteer
         super().save(*args, **kwargs)
