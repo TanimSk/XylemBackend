@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from volunteer.models import Volunteer
+from django.conf import settings
 import uuid
+from utils.openai_text_processor import matching_score
 
 
 class User(AbstractUser):
@@ -44,3 +47,24 @@ class MissingReport(models.Model):
     )
     source = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    volunteer = models.ForeignKey(
+        "volunteer.Volunteer",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="missing_reports",
+    )
+
+    # on creation of the report, assign the volunteer who is nearest to the reporter's location
+    def save(self, *args, **kwargs):
+        if not self.volunteer:
+            # Find the nearest volunteer based on reporter's location
+            volunteers = Volunteer.objects.all()
+            if volunteers:
+                nearest_volunteer = min(
+                    volunteers,
+                    key=lambda v: matching_score(v.location, self.reporter_location),
+                )
+                self.volunteer = nearest_volunteer
+        super().save(*args, **kwargs)
