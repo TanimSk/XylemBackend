@@ -18,7 +18,10 @@ def process_text_with_openai(text):
     "clothing_description": "",
     "last_seen_location": "",
     "last_seen_datetime": "",    
-    "note": <any additional notes>
+    "note": <any additional notes>,
+    "photo_url1": <if available, otherwise "">,
+    "photo_url2": <if available, otherwise "">,
+    "photo_url3": <if available, otherwise "">,
 }}
 
 - Always output valid JSON.
