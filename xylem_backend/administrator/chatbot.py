@@ -17,7 +17,7 @@ class ChatBot:
             "function": {
                 "name": "search_person",
                 "description": """Search for one or more persons by the following criteria: name, age, and gender (male or female). Return a report for each person found, indicating whether they are missing or not.
-The output must be in valid HTML, not plain text or markdown. Use appropriate HTML tags (e.g., <div>, <h2>, <p>, etc.) to display the data clearly in natural language and accessibly.""",
+The output must be in valid HTML, not plain text or markdown. Use appropriate HTML tags (e.g., <div>, <h2>, <p>, etc.) to display the data clearly in natural language and accessibly. If theres image URL, use <img> tag and set width to 18rem and height auto.""",
                 "parameters": {
                     "type": "object",
                     "properties": {
