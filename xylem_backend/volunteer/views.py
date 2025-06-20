@@ -10,6 +10,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import PermissionDenied
 from .serializers import VolunteerRegistrationSerializer, VolunteerSerializer
 
+# models
+from administrator.models import MissingReport
+
 
 # Pagination Config
 class StandardResultsSetPagination(PageNumberPagination):
@@ -50,3 +53,14 @@ class VolunteerProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ReportsView(APIView):
+    permission_classes = [AuthenticateOnlyAgent]
+    pagination_class = StandardResultsSetPagination
+
+    def get(self, request):
+        missing_reports = MissingReport.objects.filter(volunteer=request.user.volunteer)
+        paginator = self.pagination_class()
+        paginated_reports = paginator.paginate_queryset(missing_reports, request)
+        serializer = VolunteerSerializer(paginated_reports, many=True)
+        return paginator.get_paginated_response(serializer.data)
